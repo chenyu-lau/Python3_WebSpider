@@ -10,15 +10,15 @@ from urllib import request, error, parse
 from pyquery import PyQuery as pq
 from tqdm import tqdm
 from colorama import init, Fore
-import pymongo
+# import pymongo
 import time
 
 init(autoreset=True)
 
 # 创建数据库链接
-client = pymongo.MongoClient('localhost')
-db = client['cnblogs']
-collection = db['home']
+# client = pymongo.MongoClient('localhost')
+# db = client['cnblogs']
+# collection = db['home']
 
 def get_data(url, page):
     """
@@ -56,10 +56,10 @@ def get_data(url, page):
         if response.status == 200:
             return response
     except error.HTTPError as e:
-        print(e.reason, e.code, sep='\n')
+        print(f"{Fore.RED} {e.reason} {e.code}")
         return None
     except error.URLError as e:
-        print(e.reason)
+        print(f"{Fore.RED} {e.reason}")
         return None
 
 def parse_data(response):
@@ -103,7 +103,8 @@ def save_data(data):
     :param data: 解析的数据
     :return: None
     """
-    collection.insert(data)
+    # collection.insert(data)
+    print(data)
 
 def main(url, page=''):
     """
@@ -113,13 +114,17 @@ def main(url, page=''):
     """
     # 获取数据
     response = get_data(url, page)
+
+    if not response:
+        return
+
     # 解析数据
     data = parse_data(response)
     # 存储数据
     save_data(data)
 
 if __name__ == '__main__':
-    print(Fore.RED + '提示：本次抓取范围仅限博客园最新文章, 测试仅抓取前10页数据！\n')
+    print(f"{Fore.RED} 提示：本次抓取范围仅限博客园最新文章, 测试仅抓取前10页数据")
     global url
     for i in tqdm(range(10), desc='抓取进度', ncols=100):
         if i == 0:
